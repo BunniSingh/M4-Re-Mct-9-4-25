@@ -1,8 +1,11 @@
 (function () {
-  let rightContainer = document.querySelector(".right");
-  let logout = document.querySelector(".logout");
-  let showCard = document.querySelector(".show-product-details");
-  const checkboxes = document.querySelectorAll(".filter-checkbox");
+    let rightContainer = document.querySelector(".right");
+    let logout = document.querySelector(".logout");
+    let showCard = document.querySelector(".show-product-details");
+    const checkboxes = document.querySelectorAll(".filter-checkbox");
+    const searchInput = document.getElementById("search");
+    const minInput = document.getElementById("min");
+    const maxInput = document.getElementById("max");
 
   showCard.style.display = 'none'
 
@@ -74,23 +77,39 @@
 
 //   show product catogory wise
 
-checkboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", () => {
-      let selectedCategories = Array.from(checkboxes)
+    function applyAllFilters() {
+        let keyword = searchInput.value.toLowerCase().trim();
+        let min = parseFloat(minInput.value);
+        let max = parseFloat(maxInput.value);
+    
+        let selectedCategories = Array.from(document.querySelectorAll(".filter-checkbox"))
         .filter((cb) => cb.checked)
         .map((cb) => cb.value);
-  
-      let filteredProducts =
-        selectedCategories.length === 0
-          ? products
-          : products.filter((product) =>
-              selectedCategories.includes(product.category)
-            );
-  
-      showProductOnDisplay(filteredProducts);
-    });
-  });
-  
+    
+        let filtered = products.filter((product) => {
+        let matchCategory = selectedCategories.length
+            ? selectedCategories.includes(product.category)
+            : true;
+    
+        let matchKeyword = product.title.toLowerCase().includes(keyword);
+    
+        let matchMin = isNaN(min) ? true : product.price >= min;
+        let matchMax = isNaN(max) ? true : product.price <= max;
+    
+        return matchCategory && matchKeyword && matchMin && matchMax;
+        });
+    
+        showProductOnDisplay(filtered);
+    }
+
+
+    searchInput.addEventListener("input", applyAllFilters);
+    minInput.addEventListener("input", applyAllFilters);
+    maxInput.addEventListener("input", applyAllFilters);
+
+    document.querySelectorAll(".filter-checkbox").forEach((cb) => {
+        cb.addEventListener("change", applyAllFilters);
+      });
 
   logout.addEventListener("click", () => {
     console.log("logout Click");
