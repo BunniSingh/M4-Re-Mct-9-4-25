@@ -2,6 +2,7 @@
   let rightContainer = document.querySelector(".right");
   let logout = document.querySelector(".logout");
   let showCard = document.querySelector(".show-product-details");
+  const checkboxes = document.querySelectorAll(".filter-checkbox");
 
   showCard.style.display = 'none'
 
@@ -18,7 +19,6 @@
     products = data;
     showProductOnDisplay(data);
   }
-
   fetchData();
 
   function showProductOnDisplay(product) {
@@ -42,6 +42,8 @@
       `;
     });
 
+
+    // show product details
     rightContainer.addEventListener("click", (e) => {
       showCard.style.display = 'flex'
       if (e.target.classList.contains("product-details-btn")) {
@@ -68,6 +70,27 @@
       }
     });
   }
+
+
+//   show product catogory wise
+
+checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      let selectedCategories = Array.from(checkboxes)
+        .filter((cb) => cb.checked)
+        .map((cb) => cb.value);
+  
+      let filteredProducts =
+        selectedCategories.length === 0
+          ? products
+          : products.filter((product) =>
+              selectedCategories.includes(product.category)
+            );
+  
+      showProductOnDisplay(filteredProducts);
+    });
+  });
+  
 
   logout.addEventListener("click", () => {
     console.log("logout Click");
